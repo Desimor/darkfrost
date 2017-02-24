@@ -11,6 +11,8 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "axios": "^0.15.3"
+    "axios": "^0.15.3",
+    "darksky": "^0.1.2",
+    "express": "^4.14.1"
   }
 }
