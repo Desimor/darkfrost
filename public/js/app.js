@@ -37,3 +37,27 @@ var currentlyWidget = new Vue({
             });
     }
 });
+
+var dailyWidget = new Vue({
+    el: '#daily',
+    data: {
+        summary: 'Partly Cloudy',
+        icon: 'partly-cloudy'
+    },
+    methods: {
+        iconUrl: function(iconString){
+            return `/images/${iconString}.png`;
+        }
+    },
+    created: function(){
+        axios.get('/weather/29.1,-81.4')
+            .then(function(response){
+                var data = response.data.daily;
+                dailyWidget.summary = data.summary;
+                dailyWidget.icon = data.icon;
+            })
+            .catch(function(err){
+                console.log(err);
+            });
+    }
+});
