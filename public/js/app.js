@@ -1,10 +1,3 @@
-var app = new Vue({
-    el: '#app',
-    data: {
-        message: 'Hello Vue'
-    }
-});
-
 var currentlyWidget = new Vue({
     el: '#currently',
     data: {
@@ -22,12 +15,22 @@ var currentlyWidget = new Vue({
         iconUrl: function(iconString){
             return `/images/${iconString}.png`;
         },
+        getDate: function(seconds){
+            var date = new Date(seconds * 1000);
+            var month = date.getMonth();
+            var year = date.getFullYear();
+            var day = date.getDate();
+            var hour = date.getHours();
+            var minutes = date.getMinutes();
+            return `${month}/${day}/${year} ${hour}:${minutes}`
+        },
         getWeather: function(lat, lon){
             var url = `/weather/${lat},${lon}`;
              axios.get(url)
                 .then(function(res){
                 var data = res.data.currently;
                 currentlyWidget.time = data.time;
+                console.log("Here");
                 currentlyWidget.summary = data.summary;
                 currentlyWidget.icon = data.icon;
                 currentlyWidget.apparentTemperature = data.apparentTemperature;
@@ -38,8 +41,20 @@ var currentlyWidget = new Vue({
                 console.log(err);
             });
         },
-        updateWeather: function(){
-            this.getWeather(this.latitude, this.longitude);
+        updateWeather: function(location){
+            var address = `/location/${this.location}`;
+            axios.get(address)
+                .then(function(res){
+                    var lat = res.data.results[0].geometry.location.lat;
+                    var lon = res.data.results[0].geometry.location.lng;
+                    console.log(lat, lon);
+                    this.getWeather(lat, lon);
+                }.bind(this))
+                .catch(function(err){
+                    console.log(err);
+                });
+            // this.getWeather(this.lat, this.lon);
+            
         }
     },
     created: function(){
@@ -51,23 +66,37 @@ var dailyWidget = new Vue({
     el: '#daily',
     data: {
         summary: 'Partly Cloudy',
-        icon: 'partly-cloudy'
+        icon: 'partly-cloudy',
+        week: []
     },
     methods: {
-        iconUrl: function(iconString){
+        getDailyIcon: function(iconString){
             return `/images/${iconString}.png`;
+        },
+        getDate: function(seconds){
+            var date = new Date(seconds * 1000);
+            var month = date.getMonth();
+            var day = date.getDate();
+            var hour = date.getHours();
+            var minutes = date.getMinutes();
+            return `${month}/${day}, ${hour}:${minutes}`
+        },
+        getDailyWeather: function(lat, lon){
+            var url = `/weather/${lat},${lon}`;
+            axios.get(url)
+                .then(function(res){
+                    var day = res.data.daily;
+                    this.summary = day.summary;
+                    this.icon = day.icon;
+                    this.week = day.data;
+                }.bind(this))
+                .catch(function(err){
+                    console.log(err);
+                });
         }
     },
     created: function(){
-        axios.get('/weather/29.1,-81.4')
-            .then(function(res){
-                var data = res.data.daily;
-                dailyWidget.summary = data.summary;
-                dailyWidget.icon = data.icon;
-            })
-            .catch(function(err){
-                console.log(err);
-            });
+        this.getDailyWeather(29.1, -81.4);
     }
 });
 
@@ -87,12 +116,9 @@ var hourlyWidget = new Vue({
             var month = date.getMonth();
             var year = date.getFullYear();
             var day = date.getDate();
-            var hours = date.getHours();
+            var hour = date.getHours();
             var minutes = date.getMinutes();
-            return `${month}/${day}/${year} ${hour}"${minutes}`
-        },
-        getMainIcon: function(){
-            return `/images/${this.icon}.png`;
+            return `${month}/${day}/${year} ${hour}:${minutes}`
         },
         getHourlyWeather: function(lat, lon){
             var url = `/weather/${lat},${lon}`;
@@ -102,10 +128,10 @@ var hourlyWidget = new Vue({
                     this.summary = hourlyData.summary;
                     this.icon = hourlyData.icon;
                     this.hours = hourlyData.data;
-                })
+                }.bind(this))
                 .catch(function(err){
                     console.log(err);
-                }.bind(this));
+                });
         }
     },
     created: function(){

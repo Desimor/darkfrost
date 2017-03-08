@@ -8,65 +8,75 @@
     <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
 </head>
 <body>
-
-    <div id="hourly">
-        <header>
-            <div>
-                {{ summary }}
-            </div>
-            <img :src="getMainIcon()">
-        </header>
-        <main>
-            <ul>
-                <li v-for='hour in hours'>
-                    <img :src="getHourlyIcon(hour.icon)">
-                    {{ hour.icon }} - {{ hour.summary }} - {{ hour.apparentTemperature }} - {{ getDate(hour.time) }}
-                </li>
-            </ul>
-        </main>
+    <div class="topbar relative">
+        <span class="ab_center">DarkFrost Weather</span>
     </div>
 
-    <div id="currently">
-        <header>
-            <input type="text" placeholder="Latitude:" v-model="latitude">
-            <input type="text" placeholder="Longitude:" v-model="longitude">
+    <div id="currently" class="relative">
+        <header class="search relative absolute ab_left">
+            <input type="text" placeholder="Location:" v-model="location">
             <button v-on:click='updateWeather()'>Update Weather</button>
             <h4>{{ location }}</h4>
         </header>
-        <main>
+        <main class="appTemp">
             <div>
                 <h1>{{ apparentTemperature }}</h1>
             </div>
             <div>
                 <h2>{{ summary }}</h2>
                 <div>
-                    <img :src="iconUrl(icon)" alt="">
+                    <img :src="iconUrl(icon)" class="cur_icon">
                 </div>
             </div>
             <div>
-                <h3>{{ precipProbability }}</h3>
-                <h3>{{ humidity }}</h3>
+                <h3 class="right pad10">Precipitation: {{ precipProbability }}</h3>
+                <h3 class="right pad10">Humidity: {{ humidity }}</h3>
             </div>
         </main>
-        <footer>
+        <footer class="appTime">
             <h4>{{ time }}</h4>
         </footer>
     </div>
 
-    <hr>
+    
+
+    <div id="hourly">
+        <header>
+            <div>
+                {{ summary }}
+            </div>
+            <img :src="getHourlyIcon(icon)" class="icon">
+        </header>
+        <main>
+            <ul class="hourly_icon">
+                <li v-for='hour in hours'>
+                    <img :src="getHourlyIcon(hour.icon)" class="icon">
+                    <p>{{ hour.icon }}</p>
+                    <p>{{ hour.summary }}</p>
+                    <p>{{ hour.apparentTemperature }}</p>
+                    <p>{{ getDate(hour.time) }}</p>
+                </li>
+            </ul>
+        </main>
+    </div>
+
+    
 
     <div id="daily">
-        <div>
+        <header>
             <h2>{{ summary }}</h2>
-        </div>
-        <div>
-            <img :src="iconUrl(icon)" alt="">
-        </div>
+            <img :src="getDailyIcon(icon)" class="icon">
+        </header>
+        <main>
+            <ul class="daily">
+                <li v-for='day in week'>
+                    <img :src="getDailyIcon(day.icon)" class="icon">
+                    {{ day.icon }} - {{ day.summary }} - {{ day.apparentTemperature }} - {{ getDate(day.time) }}
+                </li>
+            </ul>
+        </main>
     </div>
     
-    <div id="app">
-    <p>{{ message }}</p>
-    </div>
     <script src="js/app.js"></script>
 </body>
 </html>
